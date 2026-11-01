@@ -64,7 +64,7 @@ interface AssistantPageProps {
 
 export default function AssistantPage({ bikeData }: AssistantPageProps) {
   const [messages, setMessages] = useState<Message[]>([
-    { id: 0, role: 'assistant', content: '🤖 **Hello! I\'m your BREAK BREAKER AI Assistant.**\n\nI can analyze your bike\'s sensor data in real-time and provide:\n- Fault diagnosis & troubleshooting\n- Predictive maintenance alerts\n- Safety assessments\n- Riding optimization tips\n\nAsk me anything about your bike!' },
+    { id: 0, role: 'assistant', content: '🤖 **Hello! I\'m your BREAK BREAKER AI Assistant.**\n\nI can analyze your bike\'s sensor data in real-time and provide:\n- Fault diagnosis & troubleshooting\n- Predictive maintenance alerts\n- Safety assessments\n- Riding optimization tips\n\nAsk me anything about your bike. Vehicle readings are simulated until a compatible sensor is connected.' },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -100,7 +100,7 @@ export default function AssistantPage({ bikeData }: AssistantPageProps) {
           <div>
             <h2 className="font-display text-sm tracking-wider">AI DIAGNOSTIC ASSISTANT</h2>
             <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
-              <Sparkles size={10} className="text-neon-amber" /> Powered by real-time sensor analysis
+              <Sparkles size={10} className="text-neon-amber" /> Rule-based guidance · demo telemetry
             </p>
           </div>
         </div>
