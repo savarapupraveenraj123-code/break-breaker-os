@@ -6,6 +6,7 @@ import SpeedDisplay from '@/components/SpeedDisplay';
 import CircularGauge from '@/components/CircularGauge';
 import MetricCard from '@/components/MetricCard';
 import FaultAlerts from '@/components/FaultAlerts';
+import BikeShowcase from '@/components/BikeShowcase';
 import GPSMap from '@/components/GPSMap';
 interface DashboardPageProps { data: BikeData; faults: Fault[]; isRiding: boolean; dismissFault: (id: string) => void; gpsStatus: GPSStatus; requestLocation: () => void; stopLocation: () => void; lastUpdated: Date; telemetryMode: 'DEMO'; }
 const statusLabel = (status: GPSStatus) => ({ idle: 'GPS OFF', tracking: 'GPS LIVE', denied: 'PERMISSION DENIED', unsupported: 'GPS UNAVAILABLE', error: 'GPS SIGNAL ISSUE' }[status]);
@@ -21,6 +22,7 @@ export default function DashboardPage({ data, faults, isRiding, dismissFault, gp
  const stats=[{label:'Ride status',value:isRiding?'In motion':'Parked',note:isRiding?'Session is running':'Ready to ride',icon:Bike,tone:isRiding?'good':'neutral'},{label:'Vehicle health',value:rideScore+'/100',note:faults.length?faults.length+' active alerts':'No active alerts',icon:ShieldCheck,tone:rideScore>75?'good':'warn'},{label:'Odometer',value:data.totalDistance.toLocaleString()+' km',note:'Estimated total distance',icon:Route,tone:'copper'},{label:'Last signal',value:lastUpdated.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),note:'Updated just now',icon:Clock3,tone:'neutral'}];
  return <div className="page-wrap">
   <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="page-heading"><div><div className="eyebrow flex items-center gap-2"><span className="live-dot"/> RIDER COMMAND / OVERVIEW</div><h1 className="page-title">Every ride, <span className="copper-text">in control.</span></h1><p className="page-description">Your motorcycle intelligence, safety signals and ride activity — brought into one cockpit.</p></div><div className="flex flex-wrap gap-2"><span className="status-chip status-demo"><Radio size={13}/> DEMO TELEMETRY</span><span className={'status-chip '+(gpsStatus==='tracking'?'status-live':'')}><MapPin size={13}/> {statusLabel(gpsStatus)}</span></div></motion.div>
+  <BikeShowcase />
   <div className="stats-grid">{stats.map((s,i)=><motion.div key={s.label} initial={{opacity:0,y:14}} animate={{opacity:1,y:0}} transition={{delay:i*.05}} className="stat-panel"><div className="flex items-center justify-between"><span className="eyebrow">{s.label}</span><s.icon size={17} className={'tone-'+s.tone}/></div><p className="stat-value">{s.value}</p><p className="stat-note">{s.note}</p></motion.div>)}</div>
   <div className="dashboard-grid">
    <section className="space-y-5">
