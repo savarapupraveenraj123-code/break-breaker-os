@@ -1,4 +1,5 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import type { PointerEvent } from 'react';
 
 export default function BikeShowcase() {
   const pointerX = useMotionValue(0);
@@ -6,7 +7,7 @@ export default function BikeShowcase() {
   const rotateY = useSpring(useTransform(pointerX, [-0.5, 0.5], [-11, 11]), { stiffness: 90, damping: 18 });
   const rotateX = useSpring(useTransform(pointerY, [-0.5, 0.5], [7, -7]), { stiffness: 90, damping: 18 });
 
-  const handleMove = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handleMove = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'touch') return;
     const bounds = event.currentTarget.getBoundingClientRect();
     pointerX.set((event.clientX - bounds.left) / bounds.width - 0.5);
