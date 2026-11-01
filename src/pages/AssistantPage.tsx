@@ -1,192 +1,33 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Send, User, Sparkles } from 'lucide-react';
+import { useState,useRef,useEffect } from 'react';
+import { motion,AnimatePresence } from 'framer-motion';
+import { Bot,Send,User,Sparkles,ShieldCheck,Activity,Wrench,RotateCcw } from 'lucide-react';
 import type { BikeData } from '@/hooks/useBikeData';
-
-interface Message {
-  id: number;
-  role: 'user' | 'assistant';
-  content: string;
+interface Message{id:number;role:'user'|'assistant';content:string}
+const quickQuestions=['Is it safe to ride?','Why is my engine overheating?','When should I service my bike?','How can I improve mileage?','What causes engine vibration?'];
+function generateResponse(question:string,data:BikeData):string{
+ const q=question.toLowerCase();
+ if(q.includes('overheat')||q.includes('temperature')||q.includes('engine hot'))return data.engineTemp>100?'ENGINE TEMPERATURE NEEDS ATTENTION\n\nCurrent demo reading: '+data.engineTemp+'°C.\n\nPossible causes include low coolant, a restricted radiator, a faulty thermostat or sustained high engine load.\n\nWhat to do: stop in a safe place, switch off the engine and allow it to cool. Never open a hot radiator cap. Have the cooling system checked by a qualified mechanic.':'Current demo reading: '+data.engineTemp+'°C. This is within the prototype’s configured normal band. Keep monitoring and follow your motorcycle manufacturer’s guidance.';
+ if(q.includes('safe to ride')||q.includes('can i ride')){const issues:string[]=[];if(data.engineTemp>105)issues.push('Engine temperature is high ('+data.engineTemp+'°C)');if(data.fuelLevel<10)issues.push('Fuel is critically low ('+data.fuelLevel+'%)');if(data.brakeCondition<40)issues.push('Brake estimate is low ('+data.brakeCondition+'%)');if(data.tirePressureFront<25)issues.push('Front tyre pressure estimate is low');if(data.tirePressureRear<25)issues.push('Rear tyre pressure estimate is low');if(data.batteryHealth<30)issues.push('Battery estimate is low');if(data.engineVibration>50)issues.push('Vibration estimate is elevated');return issues.length?'CAUTION — CHECK BEFORE RIDING\n\n'+issues.map(x=>'• '+x).join('\n')+'\n\nThese are simulated values, not a certified inspection. Do not ride if brakes, tyres, steering or engine condition are in doubt. Get the motorcycle checked.':'No configured demo thresholds are currently triggered.\n\nEngine: '+data.engineTemp+'°C · Fuel: '+data.fuelLevel+'% · Brakes: '+data.brakeCondition+'% · Tyres: '+data.tirePressureFront+'/'+data.tirePressureRear+' PSI.\n\nThis is not a safety certification. Inspect the bike physically before riding.';
+ }
+ if(q.includes('service')||q.includes('maintenance'))return 'MAINTENANCE CHECKLIST\n\n• Engine oil — follow the manufacturer’s interval and grade.\n• Brakes — inspect pads, fluid and lever feel regularly.\n• Tyres — check pressure when cold and inspect tread.\n• Chain — clean, lubricate and check slack as specified.\n• Air filter — inspect more often in dusty conditions.\n• Battery — check terminals and charging health.\n\nPrototype odometer estimate: '+data.totalDistance.toLocaleString()+' km. Your owner’s manual is the source of truth for service intervals.';
+ if(q.includes('fuel')||q.includes('mileage')||q.includes('efficiency'))return 'FUEL EFFICIENCY NOTES\n\n• Use smooth throttle inputs and anticipate braking.\n• Maintain manufacturer-recommended tyre pressure.\n• Avoid unnecessary idling and excess luggage.\n• Keep the chain adjusted and lubricated.\n• Service the air filter and engine on schedule.\n\nCurrent demo fuel estimate: '+data.fuelLevel+'%. Actual mileage needs real ride and fuel records.';
+ if(q.includes('vibration'))return 'VIBRATION CHECK\n\nDemo vibration reading: '+data.engineVibration+' Hz.\n\nCommon causes include loose fasteners, wheel imbalance, chain or sprocket wear, engine mounts and drivetrain issues. If vibration is new, severe or worsening, stop safely and arrange a mechanic inspection.';
+ return 'CURRENT VEHICLE SNAPSHOT\n\nSpeed: '+data.speed+' km/h\nEngine temperature: '+data.engineTemp+'°C\nFuel estimate: '+data.fuelLevel+'%\nBattery estimate: '+data.batteryHealth.toFixed(0)+'%\nBrake estimate: '+data.brakeCondition+'%\n\nI can help with maintenance, basic troubleshooting and interpreting the demo readings. These values are simulated until compatible vehicle hardware is connected.';
 }
-
-const quickQuestions = [
-  "Why is my engine overheating?",
-  "Is it safe to ride?",
-  "When should I service my bike?",
-  "How to improve fuel efficiency?",
-  "What does abnormal vibration mean?",
-];
-
-function generateResponse(question: string, data: BikeData): string {
-  const q = question.toLowerCase();
-
-  if (q.includes('overheat') || q.includes('temperature') || q.includes('engine hot')) {
-    if (data.engineTemp > 100) {
-      return `⚠️ **Engine Temperature Alert**\n\nYour engine is currently at **${data.engineTemp}°C**, which is above the safe range (70-95°C).\n\n**Possible causes:**\n1. Low coolant levels\n2. Faulty thermostat\n3. Prolonged high-RPM riding\n4. Clogged radiator fins\n\n**Immediate steps:**\n- Stop riding and let the engine cool for 15-20 minutes\n- Check coolant level and top up if needed\n- Inspect radiator for blockages\n\n**Estimated repair cost:** ₹500-₹3,000 depending on the cause.`;
-    }
-    return `✅ Your engine temperature is **${data.engineTemp}°C** — within the normal range (70-95°C). No overheating detected. Keep monitoring during long rides or hot weather.`;
-  }
-
-  if (q.includes('safe to ride') || q.includes('can i ride')) {
-    const issues: string[] = [];
-    if (data.engineTemp > 105) issues.push(`Engine temp high (${data.engineTemp}°C)`);
-    if (data.fuelLevel < 10) issues.push(`Fuel critically low (${data.fuelLevel}%)`);
-    if (data.brakeCondition < 40) issues.push(`Brake condition poor (${data.brakeCondition}%)`);
-    if (data.tirePressureFront < 25) issues.push(`Front tire pressure low (${data.tirePressureFront} PSI)`);
-    if (data.tirePressureRear < 25) issues.push(`Rear tire pressure low (${data.tirePressureRear} PSI)`);
-    if (data.batteryHealth < 30) issues.push(`Battery health degraded (${data.batteryHealth}%)`);
-    if (data.engineVibration > 50) issues.push(`High engine vibration (${data.engineVibration}hz)`);
-
-    if (issues.length === 0) {
-      return `✅ **All systems are within safe parameters.** It is safe to ride!\n\n- Engine: ${data.engineTemp}°C ✓\n- Fuel: ${data.fuelLevel}% ✓\n- Brakes: ${data.brakeCondition}% ✓\n- Tires: ${data.tirePressureFront}/${data.tirePressureRear} PSI ✓\n- Battery: ${data.batteryHealth}% ✓\n\nRide safe! 🏍️`;
-    }
-    return `⚠️ **Caution recommended before riding:**\n\n${issues.map(i => `- ${i}`).join('\n')}\n\nPlease address ${issues.length > 1 ? 'these issues' : 'this issue'} before riding. ${issues.some(i => i.includes('critically') || i.includes('poor')) ? '**Not recommended to ride.**' : 'Short rides may be okay, but schedule maintenance soon.'}`;
-  }
-
-  if (q.includes('service') || q.includes('maintenance')) {
-    return `🔧 **Recommended Service Schedule:**\n\n| Service | Interval | Status |\n|---------|----------|--------|\n| Oil Change | Every 3,000 km | ${data.totalDistance % 3000 < 500 ? '⚠️ Due soon' : '✅ OK'} |\n| Brake Pads | Every 10,000 km | ${data.brakeCondition < 50 ? '⚠️ Check needed' : '✅ OK'} |\n| Air Filter | Every 5,000 km | ✅ OK |\n| Spark Plug | Every 8,000 km | ✅ OK |\n| Chain Lube | Every 500 km | ✅ OK |\n\n**Current odometer:** ${data.totalDistance.toLocaleString()} km\n\n💡 Based on your riding pattern, schedule your next service within the next 200 km.`;
-  }
-
-  if (q.includes('fuel') || q.includes('mileage') || q.includes('efficiency')) {
-    return `⛽ **Fuel Efficiency Tips:**\n\n**Current fuel level:** ${data.fuelLevel}%\n\n**Tips to improve mileage:**\n1. Maintain steady speed (40-60 km/h optimal)\n2. Avoid sudden acceleration and braking\n3. Keep tire pressure at recommended levels (30-32 PSI)\n4. Regular engine tuning and air filter cleaning\n5. Avoid idling for extended periods\n6. Use correct gear for your speed\n\n**Your current stats:**\n- Avg speed: ~38 km/h (good range)\n- Tire pressure: ${data.tirePressureFront}/${data.tirePressureRear} PSI ${data.tirePressureFront >= 28 ? '✅' : '⚠️ Low'}\n\n📊 Estimated mileage improvement possible: 10-15% with optimal habits.`;
-  }
-
-  if (q.includes('vibration')) {
-    return `🔍 **Engine Vibration Analysis:**\n\n**Current vibration level:** ${data.engineVibration} hz\n**Normal range:** 5-30 hz\n\n${data.engineVibration > 40 ? '⚠️ **Elevated vibration detected!**' : '✅ Vibration levels are normal.'}\n\n**Common causes of abnormal vibration:**\n1. Worn engine mounts\n2. Unbalanced wheels\n3. Loose components\n4. Worn chain or sprocket\n5. Internal engine wear\n\n**Recommendation:** ${data.engineVibration > 40 ? 'Schedule a diagnostic check within the week.' : 'No action needed. Continue monitoring.'}`;
-  }
-
-  return `🤖 I analyzed your current bike data:\n\n- **Speed:** ${data.speed} km/h\n- **Engine Temp:** ${data.engineTemp}°C\n- **Fuel:** ${data.fuelLevel}%\n- **Battery:** ${data.batteryHealth.toFixed(0)}%\n- **Brakes:** ${data.brakeCondition}%\n\nI can help with diagnostics, maintenance advice, and troubleshooting. Try asking specific questions like "Is it safe to ride?" or "Why is my engine overheating?"`;
-}
-
-interface AssistantPageProps {
-  bikeData: BikeData;
-}
-
-export default function AssistantPage({ bikeData }: AssistantPageProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 0, role: 'assistant', content: '🤖 **Hello! I\'m your BREAK BREAKER AI Assistant.**\n\nI can analyze your bike\'s sensor data in real-time and provide:\n- Fault diagnosis & troubleshooting\n- Predictive maintenance alerts\n- Safety assessments\n- Riding optimization tips\n\nAsk me anything about your bike. Vehicle readings are simulated until a compatible sensor is connected.' },
-  ]);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
-
-  const handleSend = (text?: string) => {
-    const msg = text || input.trim();
-    if (!msg) return;
-
-    const userMsg: Message = { id: Date.now(), role: 'user', content: msg };
-    setMessages(prev => [...prev, userMsg]);
-    setInput('');
-    setIsTyping(true);
-
-    setTimeout(() => {
-      const response = generateResponse(msg, bikeData);
-      setMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', content: response }]);
-      setIsTyping(false);
-    }, 800 + Math.random() * 700);
-  };
-
-  return (
-    <div className="flex flex-col h-[calc(100vh-57px)]">
-      <div className="p-4 border-b border-border/50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-            <Bot size={20} className="text-primary" />
-          </div>
-          <div>
-            <h2 className="font-display text-sm tracking-wider">AI DIAGNOSTIC ASSISTANT</h2>
-            <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
-              <Sparkles size={10} className="text-neon-amber" /> Rule-based guidance · demo telemetry
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-auto p-4 space-y-4">
-        <AnimatePresence>
-          {messages.map(msg => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}
-            >
-              {msg.role === 'assistant' && (
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-1">
-                  <Bot size={16} className="text-primary" />
-                </div>
-              )}
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm font-body whitespace-pre-wrap ${
-                  msg.role === 'user'
-                    ? 'bg-primary/20 text-foreground border border-primary/30'
-                    : 'glass-card neon-border-blue'
-                }`}
-              >
-                {msg.content}
-              </div>
-              {msg.role === 'user' && (
-                <div className="w-8 h-8 rounded-full bg-neon-blue/10 flex items-center justify-center shrink-0 mt-1">
-                  <User size={16} className="text-neon-blue" />
-                </div>
-              )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
-
-        {isTyping && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Bot size={16} className="text-primary" />
-            </div>
-            <div className="glass-card neon-border-blue rounded-2xl px-4 py-3">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 rounded-full bg-neon-blue animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 rounded-full bg-neon-blue animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 rounded-full bg-neon-blue animate-bounce" style={{ animationDelay: '300ms' }} />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Quick Questions */}
-      <div className="px-4 py-2 flex gap-2 overflow-x-auto scrollbar-hide">
-        {quickQuestions.map(q => (
-          <button
-            key={q}
-            onClick={() => handleSend(q)}
-            className="shrink-0 text-xs font-body px-3 py-1.5 rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"
-          >
-            {q}
-          </button>
-        ))}
-      </div>
-
-      {/* Input */}
-      <div className="p-4 border-t border-border/50">
-        <div className="flex gap-2">
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSend()}
-            placeholder="Ask about your bike..."
-            className="flex-1 bg-muted/30 border border-border/50 rounded-xl px-4 py-3 text-sm font-body text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-all"
-          />
-          <button
-            onClick={() => handleSend()}
-            disabled={!input.trim()}
-            className="w-12 h-12 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary/30 transition-all disabled:opacity-30"
-          >
-            <Send size={18} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+export default function AssistantPage({bikeData}:{bikeData:BikeData}){
+ const[messages,setMessages]=useState<Message[]>([{id:0,role:'assistant',content:'Welcome to the BREAK BREAKER diagnostic desk.\\n\\nI can help interpret vehicle readings, explain common faults and build a maintenance checklist.\\n\\nCurrent vehicle values are simulated demo data — not live sensor measurements.'}]);
+ const[input,setInput]=useState('');const[isTyping,setIsTyping]=useState(false);const scrollRef=useRef<HTMLDivElement>(null);
+ useEffect(()=>{scrollRef.current?.scrollTo({top:scrollRef.current.scrollHeight,behavior:'smooth'});},[messages,isTyping]);
+ const handleSend=(value?:string)=>{const msg=(value??input).trim();if(!msg||isTyping)return;setMessages(p=>[...p,{id:Date.now(),role:'user',content:msg}]);setInput('');setIsTyping(true);window.setTimeout(()=>{setMessages(p=>[...p,{id:Date.now()+1,role:'assistant',content:generateResponse(msg,bikeData)}]);setIsTyping(false);},550);};
+ return <div className="page-wrap assistant-wrap">
+  <motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="page-heading"><div><p className="eyebrow"><span className="live-dot"/> INTELLIGENCE / DIAGNOSTICS</p><h1 className="page-title">Your bike’s <span className="copper-text">pit crew.</span></h1><p className="page-description">Ask questions, understand warning signs and make better maintenance decisions.</p></div><span className="status-chip status-demo"><Sparkles size={13}/> RULE-BASED DEMO</span></motion.div>
+  <div className="assistant-layout">
+   <aside className="assistant-aside"><div className="assistant-identity"><div className="assistant-orb"><Bot size={28}/></div><div><b>BREAK BREAKER AI</b><small>DIAGNOSTIC COMPANION</small></div><span className="live-dot"/></div><div className="assistant-note"><ShieldCheck size={17}/><div><b>Safety-first guidance</b><p>Advice is informational. It cannot inspect your motorcycle or replace a qualified mechanic.</p></div></div><p className="eyebrow mt-6 mb-3">CURRENT DEMO SNAPSHOT</p><div className="assistant-metrics"><div><span><Activity size={13}/> Engine temp</span><b>{bikeData.engineTemp}°C</b></div><div><span>Fuel estimate</span><b>{bikeData.fuelLevel}%</b></div><div><span>Brake estimate</span><b>{bikeData.brakeCondition}%</b></div><div><span>Battery estimate</span><b>{bikeData.batteryHealth.toFixed(0)}%</b></div></div><p className="text-[11px] text-muted-foreground mt-4">All displayed readings are simulated until hardware integration.</p></aside>
+   <section className="assistant-chat surface-panel"><div className="chat-top"><div className="assistant-mini-icon"><Bot size={18}/></div><div><b>Diagnostic conversation</b><small>Local rule-based assistant · No cloud AI connection</small></div><button onClick={()=>setMessages([{id:Date.now(),role:'assistant',content:'Conversation reset. What would you like to know about your motorcycle?'}])} className="icon-action" title="Reset conversation"><RotateCcw size={15}/></button></div>
+    <div ref={scrollRef} className="chat-messages"><AnimatePresence>{messages.map(m=><motion.div key={m.id} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} className={'chat-message '+(m.role==='user'?'user-message':'bot-message')}><span className="chat-avatar">{m.role==='user'?<User size={15}/>:<Bot size={15}/>}</span><div><small>{m.role==='user'?'YOU':'BREAK BREAKER'}</small><p>{m.content}</p></div></motion.div>)}</AnimatePresence>{isTyping&&<div className="chat-message bot-message"><span className="chat-avatar"><Bot size={15}/></span><div><small>BREAK BREAKER</small><p className="typing-dots">Analysing your question…</p></div></div>}</div>
+    <div className="quick-prompts"><span className="eyebrow">SUGGESTED QUESTIONS</span><div>{quickQuestions.map(q=><button key={q} onClick={()=>handleSend(q)}>{q}</button>)}</div></div>
+    <form className="chat-composer" onSubmit={e=>{e.preventDefault();handleSend();}}><input value={input} onChange={e=>setInput(e.target.value)} placeholder="Ask about diagnostics, maintenance or riding…"/><button type="submit" disabled={!input.trim()||isTyping}><Send size={17}/></button></form>
+   </section>
+  </div>
+ </div>;
 }
