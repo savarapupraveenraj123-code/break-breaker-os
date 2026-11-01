@@ -1,73 +1,51 @@
-# Welcome to your Lovable project
+# BREAK BREAKER OS
 
-## Project info
+**A rider intelligence and motorcycle health-monitoring prototype.** BREAK BREAKER brings ride telemetry, vehicle-health indicators, fault alerts, GPS awareness and rider assistance into one responsive command center.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Product capabilities
 
-## How can I edit this code?
+- **Rider command center:** live-updating dashboard with speed, RPM, gear, engine temperature, fuel, battery, tyre, brake and vibration indicators.
+- **Browser GPS:** opt-in device geolocation using the browser Geolocation API. The rider explicitly starts and stops location tracking.
+- **Fault rules engine:** threshold-based alerts for overheating, low fuel, brake wear, tyre pressure, vibration and battery health.
+- **Rider response:** quick access to India's emergency number (112), nearby motorcycle repair search and location sharing.
+- **AI diagnostic assistant:** rule-based troubleshooting guidance based on the currently available telemetry.
+- **Ride history, analytics, safety and settings:** supporting product areas for the rider workflow.
 
-There are several ways of editing your application.
+## Important prototype / hardware boundary
 
-**Use Lovable**
+The current engine and vehicle-health readings are **simulated demo telemetry**, not readings from a real motorcycle. Browser GPS is real device location when the rider grants permission. True engine RPM, coolant temperature, fuel level, tyre pressure and brake-condition data require a compatible OBD/CAN/IoT hardware device and a secure ingestion service. Do not use demo values to make road-safety decisions.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- React 18 + TypeScript + Vite
+- Tailwind CSS + shadcn/ui
+- Framer Motion
+- Recharts
+- React Router
+- Browser Geolocation API
 
-**Use your preferred IDE**
+## Run locally
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Build and quality checks
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm run build
+npm run lint
+npm test
+```
 
-**Use GitHub Codespaces**
+## Production integration roadmap
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Pair a supported BLE OBD/ESP32 telemetry device.
+2. Ingest authenticated, timestamped sensor events through a backend (for example, Supabase Realtime or a WebSocket service).
+3. Persist ride sessions and maintenance events per authenticated rider and motorcycle.
+4. Add consent-based push notifications and a verified roadside-assistance provider workflow.
+5. Validate all diagnostic thresholds against the specific motorcycle manufacturer's service documentation.
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+Built as a prototype for safer, more informed riding. Always follow the motorcycle manufacturer's manual and local road-safety rules.
