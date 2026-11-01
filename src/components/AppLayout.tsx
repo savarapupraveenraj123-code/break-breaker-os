@@ -145,8 +145,8 @@ export default function AppLayout({ children, isRiding, onToggleRide, faultCount
               BREAK BREAKER
             </h1>
             <div className="hidden sm:flex items-center gap-1.5 ml-2">
-              <Wifi size={12} className="text-neon-green" />
-              <span className="text-[10px] text-muted-foreground font-mono">CONNECTED</span>
+              <Wifi size={12} className="text-neon-amber" />
+              <span className="text-[10px] text-neon-amber font-mono">DEMO FEED</span>
             </div>
           </div>
 
