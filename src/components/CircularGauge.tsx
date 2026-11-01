@@ -12,12 +12,12 @@ interface CircularGaugeProps {
 }
 
 const variantColors: Record<string, { normal: string; warning: string; critical: string }> = {
-  speed: { normal: '#00d4ff', warning: '#ffaa00', critical: '#ff2d55' },
-  temp: { normal: '#00d4ff', warning: '#ffaa00', critical: '#ff2d55' },
-  fuel: { normal: '#00ff8a', warning: '#ffaa00', critical: '#ff2d55' },
-  battery: { normal: '#00ff8a', warning: '#ffaa00', critical: '#ff2d55' },
-  pressure: { normal: '#00d4ff', warning: '#ffaa00', critical: '#ff2d55' },
-  brake: { normal: '#00ff8a', warning: '#ffaa00', critical: '#ff2d55' },
+  speed: { normal: '#d88b58', warning: '#e6ad76', critical: '#ed8176' },
+  temp: { normal: '#d88b58', warning: '#e6ad76', critical: '#ed8176' },
+  fuel: { normal: '#79b9a2', warning: '#e6ad76', critical: '#ed8176' },
+  battery: { normal: '#79b9a2', warning: '#e6ad76', critical: '#ed8176' },
+  pressure: { normal: '#d88b58', warning: '#e6ad76', critical: '#ed8176' },
+  brake: { normal: '#79b9a2', warning: '#e6ad76', critical: '#ed8176' },
 };
 
 export default function CircularGauge({
