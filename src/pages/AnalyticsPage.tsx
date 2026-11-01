@@ -1,138 +1,18 @@
 import { motion } from 'framer-motion';
-import { TrendingUp, Fuel, Gauge, Zap, Award, Leaf } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, RadialBarChart, RadialBar } from 'recharts';
-
-const efficiencyData = [
-  { name: 'City', value: 42, color: '#00d4ff' },
-  { name: 'Highway', value: 35, color: '#ff2d55' },
-  { name: 'Mixed', value: 23, color: '#00ff8a' },
-];
-
-const monthlyData = [
-  { month: 'Sep', rides: 18, distance: 420 },
-  { month: 'Oct', rides: 22, distance: 580 },
-  { month: 'Nov', rides: 15, distance: 340 },
-  { month: 'Dec', rides: 20, distance: 510 },
-  { month: 'Jan', rides: 25, distance: 680 },
-  { month: 'Feb', rides: 12, distance: 280 },
-];
-
-const ecoScore = [{ name: 'Score', value: 78, fill: '#00ff8a' }];
-
-const leaderboard = [
-  { rank: 1, name: 'RiderX_Pro', score: 94, avatar: '🏆' },
-  { rank: 2, name: 'EcoRider22', score: 91, avatar: '🥈' },
-  { rank: 3, name: 'BikeWolf', score: 87, avatar: '🥉' },
-  { rank: 4, name: 'You', score: 78, avatar: '🏍️', isUser: true },
-  { rank: 5, name: 'SpeedDemon', score: 72, avatar: '⚡' },
-];
-
-export default function AnalyticsPage() {
-  return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="font-display text-xl tracking-wider text-foreground mb-1">ANALYTICS</h2>
-        <p className="text-sm text-muted-foreground font-body">Riding patterns, efficiency, and eco score</p>
-      </motion.div>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { icon: Gauge, label: 'Total Distance', value: '12,847 km', color: 'text-neon-blue' },
-          { icon: Fuel, label: 'Avg Mileage', value: '42 km/L', color: 'text-neon-green' },
-          { icon: Zap, label: 'Total Rides', value: '342', color: 'text-neon-amber' },
-          { icon: TrendingUp, label: 'Avg Speed', value: '38 km/h', color: 'text-neon-purple' },
-        ].map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 * i }}
-            className="glass-card neon-border-blue p-4"
-          >
-            <stat.icon size={18} className={stat.color} />
-            <p className="text-2xl font-display font-bold text-foreground mt-2">{stat.value}</p>
-            <p className="text-xs text-muted-foreground font-body">{stat.label}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* Riding Pattern Pie */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card neon-border-blue p-5">
-          <h3 className="font-display text-xs tracking-wider uppercase text-neon-blue mb-4">Riding Pattern</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie data={efficiencyData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value">
-                {efficiencyData.map((entry) => (
-                  <Cell key={entry.name} fill={entry.color} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="flex justify-center gap-4 mt-2">
-            {efficiencyData.map(e => (
-              <div key={e.name} className="flex items-center gap-1.5 text-xs font-body text-muted-foreground">
-                <span className="w-2 h-2 rounded-full" style={{ background: e.color }} />
-                {e.name} {e.value}%
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Monthly Rides Bar */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-card neon-border-blue p-5">
-          <h3 className="font-display text-xs tracking-wider uppercase text-neon-blue mb-4">Monthly Activity</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={monthlyData}>
-              <XAxis dataKey="month" stroke="#555" fontSize={11} fontFamily="Rajdhani" />
-              <YAxis stroke="#555" fontSize={11} />
-              <Tooltip contentStyle={{ background: 'hsl(225 35% 9%)', border: '1px solid hsl(225 25% 16%)', borderRadius: 8, fontFamily: 'Rajdhani' }} />
-              <Bar dataKey="distance" fill="#00d4ff" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </motion.div>
-
-        {/* Eco Score */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card neon-border-blue p-5">
-          <h3 className="font-display text-xs tracking-wider uppercase text-neon-green mb-4 flex items-center gap-2">
-            <Leaf size={14} /> Eco Score
-          </h3>
-          <ResponsiveContainer width="100%" height={160}>
-            <RadialBarChart cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" data={ecoScore} startAngle={180} endAngle={0}>
-              <RadialBar background={{ fill: 'hsl(225 25% 16%)' }} dataKey="value" cornerRadius={10} />
-            </RadialBarChart>
-          </ResponsiveContainer>
-          <p className="text-center font-display text-3xl font-bold text-neon-green -mt-6">78</p>
-          <p className="text-center text-xs text-muted-foreground font-body mt-1">Good — Keep it up!</p>
-        </motion.div>
-      </div>
-
-      {/* Leaderboard */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="glass-card neon-border-blue p-5">
-        <h3 className="font-display text-xs tracking-wider uppercase text-neon-blue mb-4 flex items-center gap-2">
-          <Award size={14} /> Eco-Friendly Leaderboard
-        </h3>
-        <div className="space-y-2">
-          {leaderboard.map(entry => (
-            <div
-              key={entry.rank}
-              className={`flex items-center gap-4 px-4 py-3 rounded-lg transition-all ${
-                entry.isUser
-                  ? 'bg-primary/10 border border-primary/30'
-                  : 'bg-muted/20 hover:bg-muted/40'
-              }`}
-            >
-              <span className="font-display text-sm text-muted-foreground w-6">#{entry.rank}</span>
-              <span className="text-xl">{entry.avatar}</span>
-              <span className={`font-body text-sm flex-1 ${entry.isUser ? 'text-primary font-bold' : 'text-foreground'}`}>
-                {entry.name}
-              </span>
-              <span className="font-display text-sm text-neon-green">{entry.score}</span>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-    </div>
-  );
-}
+import { TrendingUp, Fuel, Zap, Award, Leaf, Route, Activity, CalendarDays, ArrowUpRight } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, RadialBarChart, RadialBar, CartesianGrid } from 'recharts';
+const efficiencyData=[{name:'City',value:42,color:'#d88b58'},{name:'Highway',value:35,color:'#79b9a2'},{name:'Mixed',value:23,color:'#8c9cae'}];
+const monthlyData=[{month:'Sep',rides:18,distance:420},{month:'Oct',rides:22,distance:580},{month:'Nov',rides:15,distance:340},{month:'Dec',rides:20,distance:510},{month:'Jan',rides:25,distance:680},{month:'Feb',rides:12,distance:280}];
+const ecoScore=[{name:'Score',value:78,fill:'#79b9a2'}];
+const leaderboard=[{rank:1,name:'RiderX_Pro',score:94,avatar:'01'},{rank:2,name:'EcoRider22',score:91,avatar:'02'},{rank:3,name:'BikeWolf',score:87,avatar:'03'},{rank:4,name:'You',score:78,avatar:'YOU',isUser:true},{rank:5,name:'SpeedDemon',score:72,avatar:'05'}];
+const tooltipStyle={background:'#121b23',border:'1px solid rgba(255,255,255,.12)',borderRadius:12,color:'#eef2f4',fontSize:12};
+export default function AnalyticsPage(){return <div className="page-wrap">
+<motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="page-heading"><div><p className="eyebrow"><span className="live-dot"/> PERFORMANCE / INSIGHTS</p><h1 className="page-title">Know your <span className="copper-text">ride rhythm.</span></h1><p className="page-description">Understand distance, efficiency and riding patterns at a glance.</p></div><span className="status-chip status-demo"><CalendarDays size={13}/> SAMPLE PERIOD · 6 MONTHS</span></motion.div>
+<div className="stats-grid">{[{icon:Route,label:'Total distance',value:'12,847 km',note:'Odometer estimate'},{icon:Fuel,label:'Average mileage',value:'42 km/L',note:'Illustrative estimate'},{icon:Zap,label:'Total rides',value:'342',note:'Sample ride history'},{icon:TrendingUp,label:'Average speed',value:'38 km/h',note:'Across sample rides'}].map((s,i)=><motion.div key={s.label} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:i*.05}} className="stat-panel"><div className="flex justify-between"><span className="eyebrow">{s.label}</span><s.icon size={17} className="tone-copper"/></div><p className="stat-value">{s.value}</p><p className="stat-note">{s.note}</p></motion.div>)}</div>
+<div className="analytics-grid">
+<motion.section initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} className="surface-panel chart-panel"><div className="flex items-start justify-between"><div><p className="eyebrow">DISTANCE OVER TIME</p><h3 className="panel-title">Monthly activity</h3></div><span className="chart-tag"><Activity size={12}/> KM / MONTH</span></div><div className="chart-area"><ResponsiveContainer width="100%" height="100%"><BarChart data={monthlyData} barSize={28}><CartesianGrid stroke="rgba(255,255,255,.06)" vertical={false}/><XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill:'#84919b',fontSize:11}}/><YAxis axisLine={false} tickLine={false} tick={{fill:'#84919b',fontSize:10}}/><Tooltip contentStyle={tooltipStyle}/><Bar dataKey="distance" fill="#d88b58" radius={[6,6,0,0]}/></BarChart></ResponsiveContainer></div></motion.section>
+<motion.section initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:.06}} className="surface-panel chart-panel"><p className="eyebrow">RIDE DISTRIBUTION</p><h3 className="panel-title">Where you ride</h3><div className="chart-area"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={efficiencyData} cx="50%" cy="50%" innerRadius={58} outerRadius={88} paddingAngle={4} dataKey="value">{efficiencyData.map(e=><Cell key={e.name} fill={e.color}/>)}</Pie><Tooltip contentStyle={tooltipStyle}/></PieChart></ResponsiveContainer></div><div className="legend-list">{efficiencyData.map(e=><div key={e.name}><span><i style={{background:e.color}}/>{e.name}</span><b>{e.value}%</b></div>)}</div></motion.section>
+<motion.section initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{delay:.12}} className="surface-panel eco-panel"><div className="flex items-center gap-2"><Leaf size={16} className="tone-good"/><p className="eyebrow">RIDE EFFICIENCY INDEX</p></div><h3 className="panel-title">Eco score</h3><div className="eco-chart"><ResponsiveContainer width="100%" height="100%"><RadialBarChart cx="50%" cy="75%" innerRadius="65%" outerRadius="100%" data={ecoScore} startAngle={180} endAngle={0}><RadialBar background={{fill:'rgba(255,255,255,.08)'}} dataKey="value" cornerRadius={12}/></RadialBarChart></ResponsiveContainer><div className="eco-value">78<small>/100</small></div></div><p className="text-xs text-muted-foreground text-center">Good momentum · keep it smooth</p></motion.section>
+</div>
+<section className="surface-panel mt-5"><div className="flex items-end justify-between mb-5"><div><p className="eyebrow">COMMUNITY / COMPARISON</p><h3 className="panel-title">Efficiency leaderboard</h3></div><span className="chart-tag"><Award size={13}/> DEMO DATA</span></div><div className="leaderboard">{leaderboard.map(e=><div key={e.rank} className={'leader-row '+(e.isUser?'leader-you':'')}><span className="leader-rank">{String(e.rank).padStart(2,'0')}</span><span className="leader-avatar">{e.avatar}</span><b>{e.name}</b><div className="leader-bar"><span style={{width:e.score+'%'}}/></div><strong>{e.score}</strong><ArrowUpRight size={15} className="text-muted-foreground"/></div>)}</div><p className="text-[11px] text-muted-foreground mt-4">All charts and rankings on this prototype use illustrative sample data, not verified riding records.</p></section>
+</div>}
