@@ -1,115 +1,13 @@
+import { useMemo,useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, MapPin, Fuel, Gauge, TrendingUp } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, AreaChart, Area } from 'recharts';
-
-const mockRides = [
-  { id: 1, date: '2026-02-21', duration: '45 min', distance: 28.4, avgSpeed: 38, maxSpeed: 72, fuel: 2.1, route: 'Home → Office' },
-  { id: 2, date: '2026-02-20', duration: '1h 12min', distance: 52.7, avgSpeed: 44, maxSpeed: 85, fuel: 3.8, route: 'Office → Mall → Home' },
-  { id: 3, date: '2026-02-19', duration: '32 min', distance: 18.9, avgSpeed: 35, maxSpeed: 60, fuel: 1.4, route: 'Home → Gym' },
-  { id: 4, date: '2026-02-18', duration: '1h 38min', distance: 74.2, avgSpeed: 46, maxSpeed: 95, fuel: 5.2, route: 'City Tour' },
-  { id: 5, date: '2026-02-17', duration: '25 min', distance: 14.1, avgSpeed: 34, maxSpeed: 55, fuel: 1.0, route: 'Home → Market' },
-];
-
-const speedHistory = Array.from({ length: 24 }, (_, i) => ({
-  time: `${i}:00`,
-  speed: Math.random() * 60 + 10,
-  temp: Math.random() * 30 + 75,
-}));
-
-const weeklyDistance = [
-  { day: 'Mon', km: 32 },
-  { day: 'Tue', km: 55 },
-  { day: 'Wed', km: 18 },
-  { day: 'Thu', km: 74 },
-  { day: 'Fri', km: 41 },
-  { day: 'Sat', km: 89 },
-  { day: 'Sun', km: 25 },
-];
-
-export default function HistoryPage() {
-  return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <h2 className="font-display text-xl tracking-wider text-foreground mb-1">RIDE HISTORY</h2>
-        <p className="text-sm text-muted-foreground font-body">Your recent rides and performance data</p>
-      </motion.div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card neon-border-blue p-5">
-          <h3 className="font-display text-xs tracking-wider uppercase text-neon-blue mb-4">Weekly Distance</h3>
-          <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={weeklyDistance}>
-              <defs>
-                <linearGradient id="distGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#00d4ff" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#00d4ff" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="day" stroke="#555" fontSize={11} fontFamily="Rajdhani" />
-              <YAxis stroke="#555" fontSize={11} />
-              <Tooltip contentStyle={{ background: 'hsl(225 35% 9%)', border: '1px solid hsl(225 25% 16%)', borderRadius: 8, fontFamily: 'Rajdhani' }} />
-              <Area type="monotone" dataKey="km" stroke="#00d4ff" fill="url(#distGrad)" strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-card neon-border-blue p-5">
-          <h3 className="font-display text-xs tracking-wider uppercase text-neon-blue mb-4">Speed & Temp (24h)</h3>
-          <ResponsiveContainer width="100%" height={180}>
-            <LineChart data={speedHistory}>
-              <XAxis dataKey="time" stroke="#555" fontSize={10} interval={5} fontFamily="Rajdhani" />
-              <YAxis stroke="#555" fontSize={10} />
-              <Tooltip contentStyle={{ background: 'hsl(225 35% 9%)', border: '1px solid hsl(225 25% 16%)', borderRadius: 8, fontFamily: 'Rajdhani' }} />
-              <Line type="monotone" dataKey="speed" stroke="#00d4ff" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="temp" stroke="#ff2d55" strokeWidth={2} dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
-        </motion.div>
-      </div>
-
-      {/* Ride List */}
-      <div className="space-y-3">
-        {mockRides.map((ride, i) => (
-          <motion.div
-            key={ride.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 + i * 0.05 }}
-            className="glass-card neon-border-blue p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6"
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-full bg-neon-blue/10 flex items-center justify-center shrink-0">
-                <Calendar size={18} className="text-neon-blue" />
-              </div>
-              <div className="min-w-0">
-                <p className="font-display text-sm text-foreground">{ride.date}</p>
-                <p className="text-xs text-muted-foreground font-body flex items-center gap-1">
-                  <MapPin size={10} /> {ride.route}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 sm:gap-6 flex-wrap text-xs font-body">
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Clock size={12} className="text-neon-blue" />
-                {ride.duration}
-              </div>
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Gauge size={12} className="text-neon-blue" />
-                {ride.distance} km
-              </div>
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <TrendingUp size={12} className="text-neon-green" />
-                Avg {ride.avgSpeed} km/h
-              </div>
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Fuel size={12} className="text-neon-amber" />
-                {ride.fuel} L
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
-}
+import { Calendar,Clock,Fuel,TrendingUp,Search,Route,ArrowUpRight,Bike } from 'lucide-react';
+import { AreaChart,Area,XAxis,YAxis,ResponsiveContainer,Tooltip,CartesianGrid } from 'recharts';
+const mockRides=[{id:1,date:'2026-02-21',duration:'45 min',distance:28.4,avgSpeed:38,maxSpeed:72,fuel:2.1,route:'Home → Office',type:'Commute'},{id:2,date:'2026-02-20',duration:'1h 12min',distance:52.7,avgSpeed:44,maxSpeed:85,fuel:3.8,route:'Office → Mall → Home',type:'Personal'},{id:3,date:'2026-02-19',duration:'32 min',distance:18.9,avgSpeed:35,maxSpeed:60,fuel:1.4,route:'Home → Gym',type:'Commute'},{id:4,date:'2026-02-18',duration:'1h 38min',distance:74.2,avgSpeed:46,maxSpeed:95,fuel:5.2,route:'City Tour',type:'Leisure'},{id:5,date:'2026-02-17',duration:'25 min',distance:14.1,avgSpeed:34,maxSpeed:55,fuel:1.0,route:'Home → Market',type:'Commute'}];
+const weeklyDistance=[{day:'Mon',km:32},{day:'Tue',km:55},{day:'Wed',km:18},{day:'Thu',km:74},{day:'Fri',km:41},{day:'Sat',km:89},{day:'Sun',km:25}];
+const tooltipStyle={background:'#121b23',border:'1px solid rgba(255,255,255,.12)',borderRadius:12,color:'#eef2f4',fontSize:12};
+export default function HistoryPage(){const[query,setQuery]=useState('');const[filter,setFilter]=useState('All rides');const rides=useMemo(()=>mockRides.filter(r=>(filter==='All rides'||r.type===filter)&&(r.route+' '+r.date).toLowerCase().includes(query.toLowerCase())),[filter,query]);return <div className="page-wrap">
+<motion.div initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} className="page-heading"><div><p className="eyebrow"><span className="live-dot"/> ACTIVITY / JOURNAL</p><h1 className="page-title">Your miles, <span className="copper-text">documented.</span></h1><p className="page-description">A clear record of recent journeys and riding patterns.</p></div><span className="status-chip status-demo"><Calendar size={13}/> SAMPLE RECORDS</span></motion.div>
+<div className="stats-grid stats-grid-three"><div className="stat-panel"><span className="eyebrow">RECENT DISTANCE</span><p className="stat-value">188.3 km</p><p className="stat-note">Across 5 sample rides</p></div><div className="stat-panel"><span className="eyebrow">TIME ON ROAD</span><p className="stat-value">4h 32m</p><p className="stat-note">Estimated duration</p></div><div className="stat-panel"><span className="eyebrow">AVERAGE SPEED</span><p className="stat-value">39.4 km/h</p><p className="stat-note">Recent sample average</p></div></div>
+<section className="surface-panel mt-5"><div className="flex items-end justify-between gap-4 mb-4"><div><p className="eyebrow">WEEKLY OVERVIEW</p><h3 className="panel-title">Distance travelled</h3></div><span className="chart-tag"><Route size={13}/> KM / DAY</span></div><div className="history-chart"><ResponsiveContainer width="100%" height="100%"><AreaChart data={weeklyDistance}><defs><linearGradient id="historyFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#d88b58" stopOpacity={.3}/><stop offset="100%" stopColor="#d88b58" stopOpacity={0}/></linearGradient></defs><CartesianGrid stroke="rgba(255,255,255,.06)" vertical={false}/><XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill:'#84919b',fontSize:11}}/><YAxis axisLine={false} tickLine={false} tick={{fill:'#84919b',fontSize:10}}/><Tooltip contentStyle={tooltipStyle}/><Area type="monotone" dataKey="km" stroke="#d88b58" strokeWidth={2.5} fill="url(#historyFill)"/></AreaChart></ResponsiveContainer></div></section>
+<section className="surface-panel mt-5"><div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-5"><div><p className="eyebrow">JOURNEY LOG</p><h3 className="panel-title">Recent rides</h3></div><div className="flex flex-wrap gap-2"><div className="search-field"><Search size={15}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search route or date"/></div><select className="filter-select" value={filter} onChange={e=>setFilter(e.target.value)}><option>All rides</option><option>Commute</option><option>Personal</option><option>Leisure</option></select></div></div><div className="ride-list">{rides.map((ride,i)=><motion.article key={ride.id} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:i*.04}} className="ride-row"><div className="ride-date-icon"><Bike size={18}/></div><div className="ride-main"><div className="flex flex-wrap items-center gap-2"><b>{ride.route}</b><span className="ride-type">{ride.type}</span></div><small><Calendar size={12}/>{ride.date}</small></div><div className="ride-metric"><span><Route size={13}/> Distance</span><b>{ride.distance} km</b></div><div className="ride-metric"><span><Clock size={13}/> Duration</span><b>{ride.duration}</b></div><div className="ride-metric"><span><TrendingUp size={13}/> Avg. speed</span><b>{ride.avgSpeed} km/h</b></div><div className="ride-metric"><span><Fuel size={13}/> Fuel</span><b>{ride.fuel} L</b></div><ArrowUpRight size={16} className="text-muted-foreground ride-arrow"/></motion.article>)}{!rides.length&&<div className="empty-state py-10">No rides match that search.</div>}</div><p className="text-[11px] text-muted-foreground mt-4">Ride history is illustrative sample content; this prototype does not yet persist completed journeys.</p></section>
+</div>}
