@@ -1,93 +1,18 @@
 import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, History, BarChart3, Bot, Shield, Settings, Bike, Menu, X, AlertTriangle, Power, Wifi, ArrowUpRight } from 'lucide-react';
-
-const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Overview', group: 'WORKSPACE' },
-  { to: '/history', icon: History, label: 'Ride history', group: 'WORKSPACE' },
-  { to: '/analytics', icon: BarChart3, label: 'Insights', group: 'WORKSPACE' },
-  { to: '/assistant', icon: Bot, label: 'AI assistant', group: 'TOOLS' },
-  { to: '/safety', icon: Shield, label: 'Safety centre', group: 'TOOLS' },
-  { to: '/settings', icon: Settings, label: 'Preferences', group: 'TOOLS' },
-];
-
-interface AppLayoutProps {
-  children: React.ReactNode;
-  isRiding: boolean;
-  onToggleRide: () => void;
-  faultCount: number;
-}
-
-export default function AppLayout({ children, isRiding, onToggleRide, faultCount }: AppLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const location = useLocation();
-  const current = navItems.find(item => item.to === location.pathname);
-  const renderNav = (mobile = false) => (
-    <nav className={mobile ? 'mobile-nav-list' : 'sidebar-nav'}>
-      {(['WORKSPACE', 'TOOLS'] as const).map(group => (
-        <div className="nav-group" key={group}>
-          {!mobile && <p className="nav-group-label">{group}</p>}
-          {navItems.filter(item => item.group === group).map(item => {
-            const active = location.pathname === item.to;
-            return <NavLink key={item.to} to={item.to} onClick={() => setSidebarOpen(false)} className={({isActive}) => `nav-item ${isActive ? 'active' : ''}`}>
-              <item.icon size={18} strokeWidth={active ? 2.2 : 1.8}/>
-              <span>{item.label}</span>
-              {item.to === '/safety' && faultCount > 0 && <i className="nav-alert-dot"/>}
-              {active && <span className="nav-active-mark"/>}
-            </NavLink>;
-          })}
-        </div>
-      ))}
-    </nav>
-  );
-
-  return (
-    <div className="app-shell">
-      <aside className="desktop-sidebar">
-        <div className="brand-lockup">
-          <div className="brand-mark"><Bike size={22} strokeWidth={2.2}/></div>
-          <div><p className="brand-name">BREAK<span>BREAK</span>ER</p><p className="brand-sub">RIDER INTELLIGENCE</p></div>
-        </div>
-        <div className="sidebar-divider"/>
-        {renderNav()}
-        <div className="sidebar-bottom">
-          <div className="system-card">
-            <div className="system-card-top"><span className="system-dot"/><span>SYSTEM STATUS</span><span className="system-live">DEMO</span></div>
-            <p>Rider systems are ready.</p>
-            <div className="system-meter"><span/></div>
-            <small>LOCAL PREVIEW ENVIRONMENT</small>
-          </div>
-          <a className="sidebar-footer-link" href="https://github.com/savarapupraveenraj123-code/break-breaker-os" target="_blank" rel="noreferrer">Project repository <ArrowUpRight size={13}/></a>
-        </div>
-      </aside>
-
-      <AnimatePresence>
-        {sidebarOpen && <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="mobile-scrim" onClick={() => setSidebarOpen(false)}/>}
-      </AnimatePresence>
-      <AnimatePresence>
-        {sidebarOpen && <motion.aside initial={{x:-300}} animate={{x:0}} exit={{x:-300}} transition={{type:'spring',damping:27,stiffness:240}} className="mobile-sidebar">
-          <div className="brand-lockup"><div className="brand-mark"><Bike size={22}/></div><div><p className="brand-name">BREAK<span>BREAK</span>ER</p><p className="brand-sub">RIDER INTELLIGENCE</p></div><button className="mobile-close" onClick={() => setSidebarOpen(false)} aria-label="Close menu"><X size={20}/></button></div>
-          {renderNav(true)}
-        </motion.aside>}
-      </AnimatePresence>
-
-      <div className="main-column">
-        <header className="topbar">
-          <div className="topbar-left">
-            <button className="mobile-menu" onClick={() => setSidebarOpen(true)} aria-label="Open menu"><Menu size={21}/></button>
-            <div className="breadcrumb"><span>BREAK BREAKER</span><b>/</b><strong>{current?.label || 'Workspace'}</strong></div>
-          </div>
-          <div className="topbar-right">
-            <div className="feed-status"><span className="feed-pulse"/><Wifi size={13}/><span>DEMO FEED</span></div>
-            {faultCount > 0 && <div className="fault-pill"><AlertTriangle size={14}/><span>{faultCount} ALERT{faultCount === 1 ? '' : 'S'}</span></div>}
-            <button onClick={onToggleRide} className={`ride-toggle ${isRiding ? 'riding' : ''}`}><Power size={15}/><span>{isRiding ? 'END RIDE' : 'START RIDE'}</span></button>
-            <div className="avatar-chip">BB</div>
-          </div>
-        </header>
-        <main className="main-content">{children}</main>
-      </div>
-      <div className="mobile-bottom-nav">{navItems.slice(0,4).map(item => <NavLink key={item.to} to={item.to} className={({isActive}) => `mobile-tab ${isActive ? 'active' : ''}`}><item.icon size={19}/><span>{item.label === 'Overview' ? 'Home' : item.label === 'Ride history' ? 'Rides' : item.label === 'Insights' ? 'Insights' : 'Assistant'}</span></NavLink>)}</div>
-    </div>
-  );
+import { NavLink,useLocation } from 'react-router-dom';
+import { motion,AnimatePresence } from 'framer-motion';
+import { LayoutDashboard,History,BarChart3,Bot,Shield,Settings,Bike,Menu,X,AlertTriangle,Power,Wifi,ArrowUpRight,ChevronRight,Activity } from 'lucide-react';
+const navItems=[{to:'/',icon:LayoutDashboard,label:'Overview',group:'WORKSPACE'},{to:'/history',icon:History,label:'Ride history',group:'WORKSPACE'},{to:'/analytics',icon:BarChart3,label:'Performance',group:'WORKSPACE'},{to:'/assistant',icon:Bot,label:'AI assistant',group:'TOOLS'},{to:'/safety',icon:Shield,label:'Safety centre',group:'TOOLS'},{to:'/settings',icon:Settings,label:'Settings',group:'TOOLS'}];
+interface AppLayoutProps{children:React.ReactNode;isRiding:boolean;onToggleRide:()=>void;faultCount:number}
+export default function AppLayout({children,isRiding,onToggleRide,faultCount}:AppLayoutProps){
+ const[sidebarOpen,setSidebarOpen]=useState(false);const location=useLocation();const current=navItems.find(i=>i.to===location.pathname);
+ const renderNav=(mobile=false)=><nav className={mobile?'mobile-nav-list':'sidebar-nav'}>{(['WORKSPACE','TOOLS'] as const).map(group=><div className="nav-group" key={group}>{!mobile&&<p className="nav-group-label">{group}</p>}{navItems.filter(i=>i.group===group).map(item=>{const active=location.pathname===item.to;return <NavLink key={item.to} to={item.to} onClick={()=>setSidebarOpen(false)} className={({isActive})=>'nav-item '+(isActive?'active':'')}><item.icon size={18} strokeWidth={active?2.2:1.8}/><span>{item.label}</span>{item.to==='/safety'&&faultCount>0&&<i className="nav-alert-dot"/>}{active&&<span className="nav-active-mark"/>}</NavLink>;})}</div>)}</nav>;
+ const Brand=()=><div className="brand-lockup"><div className="brand-mark"><Bike size={22} strokeWidth={2.2}/></div><div><p className="brand-name">BREAK<span>BREAK</span>ER</p><p className="brand-sub">RIDER INTELLIGENCE OS</p></div></div>;
+ return <div className="app-shell">
+  <aside className="desktop-sidebar"><Brand/><div className="sidebar-divider"/>{renderNav()}<div className="sidebar-bottom"><div className="system-card"><div className="system-card-top"><span className="system-dot"/><span>SYSTEM STATUS</span><span className="system-live">DEMO</span></div><p>Rider systems are standing by.</p><div className="system-meter"><span/></div><small>HARDWARE NOT CONNECTED</small></div><a className="sidebar-footer-link" href="https://github.com/savarapupraveenraj123-code/break-breaker-os" target="_blank" rel="noreferrer">Project repository <ArrowUpRight size={13}/></a></div></aside>
+  <AnimatePresence>{sidebarOpen&&<motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="mobile-scrim" onClick={()=>setSidebarOpen(false)}/>}</AnimatePresence>
+  <AnimatePresence>{sidebarOpen&&<motion.aside initial={{x:-300}} animate={{x:0}} exit={{x:-300}} transition={{type:'spring',damping:27,stiffness:240}} className="mobile-sidebar"><div className="flex items-center"><Brand/><button className="mobile-close" onClick={()=>setSidebarOpen(false)} aria-label="Close menu"><X size={20}/></button></div>{renderNav(true)}<div className="system-card mt-auto"><div className="system-card-top"><span className="system-dot"/> SYSTEM STATUS <span className="system-live">DEMO</span></div><p>Prototype environment</p></div></motion.aside>}</AnimatePresence>
+  <div className="main-column"><header className="topbar"><div className="topbar-left"><button className="mobile-menu" onClick={()=>setSidebarOpen(true)} aria-label="Open menu"><Menu size={21}/></button><div className="breadcrumb"><span>BREAK BREAKER</span><ChevronRight size={13}/><strong>{current?.label||'Workspace'}</strong></div></div><div className="topbar-right"><div className="feed-status"><span className="feed-pulse"/><Wifi size={13}/><span>DEMO FEED</span></div>{faultCount>0&&<div className="fault-pill"><AlertTriangle size={14}/><span>{faultCount} ALERT{faultCount===1?'':'S'}</span></div>}<button onClick={onToggleRide} className={'ride-toggle '+(isRiding?'riding':'')}><Power size={15}/><span>{isRiding?'END RIDE':'START RIDE'}</span></button><div className="avatar-chip">BB</div></div></header><main className="main-content">{children}</main></div>
+  <div className="mobile-bottom-nav">{navItems.slice(0,4).map(item=><NavLink key={item.to} to={item.to} className={({isActive})=>'mobile-tab '+(isActive?'active':'')}><item.icon size={19}/><span>{item.label==='Overview'?'Home':item.label==='Ride history'?'Rides':item.label==='Performance'?'Insights':'Assistant'}</span></NavLink>)}</div>
+ </div>;
 }
